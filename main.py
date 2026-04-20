@@ -1,6 +1,7 @@
 import os
 import re
 from unidecode import unidecode
+import random
 def TextProcessor(path_file):
     txt = []
     with open(path_file, "r", encoding="utf-8") as f:
@@ -44,7 +45,30 @@ def MarkovChain(cleaned_text, n_gram=2):
             
     return markov_model
         
-            
+        
+def generate_lyrics(markov_model, limit=100, start=None):
+    n = 0
+    if(start == None):
+        start = random.choice(list(markov_model.keys()))
+        
+    current_state = start
+
+    
+    song_words = list(current_state)
+    
+    while n < limit:
+        next_word = random.choices(list(markov_model[current_state].keys()),
+                                    list(markov_model[current_state].values()))[0]
+        
+        song_words.append(next_word)
+        
+        current_state = current_state[1:] + (next_word, )
+
+        n += 1
+        
+    return " ".join(song_words)
+    
+    
                 
                 
 path = os.getcwd()
@@ -52,6 +76,9 @@ text = TextProcessor(path + "/meu_novo_mundo.txt")
 
 clean = CleanedText(text)
 
-a = MarkovChain(clean)
+markov = MarkovChain(clean)
     
-print(a)
+for i in range(5):
+    print(generate_lyrics(markov, 20))
+    print("\n")
+
